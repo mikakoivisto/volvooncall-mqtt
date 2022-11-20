@@ -59,7 +59,7 @@ class App extends EventEmitter {
     let self = this;
     // Update status from car
     setInterval(() => {
-      Object.keys(self.cars).forEach(id => self.cars[id].refreshStatusCar())
+      Object.keys(self.cars).forEach(id => self.cars[id].refreshVehicleStatusFromCar())
     }, 60 * 1000 * self.config.refreshStatusCar)
 
     // Update status from cloud
