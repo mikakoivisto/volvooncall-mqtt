@@ -1,0 +1,32 @@
+version: "3.4"
+services:
+  mqtt:
+    image: eclipse-mosquitto
+    volumes:
+      #- /etc/localtime:/etc/localtime:ro
+      - ./mosquitto/config.conf:/mosquitto/config/mosquitto.conf
+  volvooncall-mqtt:
+    image: volvooncall
+    build:
+      context: .
+    links:
+      - mqtt
+    env_file: 
+      - docker.env
+  homeassistant:
+    image: homeassistant/home-assistant:2022.10.4
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+      - SYS_RESOURCE
+    privileged: true
+    environment:
+      - TZ=Europe/Helsinki
+    volumes:
+      - ./haconfig:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    ports:
+      - 8123:8123
+    depends_on:
+      - mqtt
