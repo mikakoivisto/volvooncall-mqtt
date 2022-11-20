@@ -4,6 +4,11 @@ const VocCar = require('./lib/car.js');
 const EventEmitter = require('events');
 const mqttApi = require('mqtt');
 const { isGeneratorObject } = require('util/types');
+const logDebug = require('debug')('app:debug');
+const logError = require('debug')('app:error');
+const logInfo = require('debug')('app:info');
+
+logInfo.log = console.log.bind(console);
 
 const config = {
   mqttHost: process.env.MQTTHOST || 'localhost',
@@ -19,7 +24,7 @@ const config = {
   refreshPosition: process.env.REFRESH_POSITION || 5
 }
 
-console.log(JSON.stringify(config));
+logDebug(JSON.stringify(config));
 
 class App extends EventEmitter {
   voc;
@@ -38,8 +43,8 @@ class App extends EventEmitter {
     });
 
     this.voc.login().then(res => {
-      console.log(`Logged in to account ${res.accountId} as ${res.firstName} ${res.lastName}`)
-    }).catch(e => console.log(e));
+      logDebug(`Logged in to account ${res.accountId} as ${res.firstName} ${res.lastName}`)
+    }).catch(e => logError(e));
 
     this.mqtt = mqttApi.connect({
       host: config.mqttHost,
@@ -60,12 +65,12 @@ class App extends EventEmitter {
     // Update status from car
     setInterval(() => {
       Object.keys(self.cars).forEach(id => self.cars[id].refreshVehicleStatusFromCar())
-    }, 60 * 1000 * self.config.refreshStatusCar)
+    }, 60 * 1000 * self.config.refreshStatusCar);
 
     // Update status from cloud
     setInterval(() => {
       Object.keys(self.cars).forEach(id => self.cars[id].getVehicleStatusFromCloud())
-    }, 60 * 1000 * self.config.refreshStatusCloud)
+    }, 60 * 1000 * self.config.refreshStatusCloud);
 
     // Update position
     setInterval(() => {
@@ -79,7 +84,7 @@ class App extends EventEmitter {
   }
 
   mqttConnected() {
-    console.log('MQTT connection established');
+    logInfo('MQTT connection established');
     this.mqtt.subscribe(config.hassTopic);
     this.listVehiclesOnAccount();
   }
@@ -89,7 +94,7 @@ class App extends EventEmitter {
     self.voc.listVehiclesOnAccount()
       .then(vehicles => {
         self.updateVehicles(vehicles);
-      }).catch(err => console.log(`Failed to get vehicles:  ${err}`))
+      }).catch(err => logError(`Failed to get vehicles:  ${err}`))
   }
 
   updateVehicles(vehicles) {
@@ -97,7 +102,7 @@ class App extends EventEmitter {
     let cars = {};
     vehicles.forEach(vehicle => {
       const id = vehicle.data.id;
-      console.log('Found vehicle ' + id + '\n' + JSON.stringify(vehicle));
+      logDebug('Found vehicle ' + id + '\n' + JSON.stringify(vehicle));
       let car = new VocCar(vehicle, self.voc);
       cars[id] = car;
     });
@@ -115,15 +120,15 @@ class App extends EventEmitter {
     });
 
     self.mqtt.on('reconnect', () => { 
-      console.log('Attempting to reconnect to MQTT broker');
+      logInfo('Attempting to reconnect to MQTT broker');
     });
 
     self.mqtt.on('error', (error) => {
-      console.log('Unable to connect to MQTT broker.', error.message);
+      logError('Unable to connect to MQTT broker.', error.message);
     });
 
     self.mqtt.on('message', (topic, message) => {
-      console.log('Message received on ' + topic);
+      logDebug('Message received on ' + topic);
       self.handleMessage(topic, message);
     });
 
@@ -177,28 +182,28 @@ class App extends EventEmitter {
 
   publishAttributes(car) {
     let self = this;
-    console.log(`publish ${car.vehicleId} attributes`)
+    logInfo(`publish ${car.vehicleId} attributes`)
     self.mqtt.publish(`volvooncall/${car.vehicleId}/attributes`, JSON.stringify(car.attributes), { retain: true});
   }
 
   publishStatus(car) {
     let self = this;
-    console.log(`publish ${car.vehicleId} status`)
+    logInfo(`publish ${car.vehicleId} status`)
     self.mqtt.publish(`volvooncall/${car.vehicleId}/status`, JSON.stringify(car.status), { retain: true});
   }
 
   publishChargeLocations(car) {
     let self = this;
-    console.log(`publish ${car.vehicleId} charge locations`)
+    logInfo(`publish ${car.vehicleId} charge locations`)
     Object.keys(car.chargeLocations).forEach(id => {
-      console.log(`publish ${car.vehicleId} charge location ${id}`)
+      logInfo(`publish ${car.vehicleId} charge location ${id}`)
       self.mqtt.publish(`volvooncall/${car.vehicleId}/charge_locations/${id}`, JSON.stringify(car.chargeLocations[id]), { retain: true});
     })
   }
 
   publishPosition(car) {
     let self = this;
-    console.log(`publish ${car.vehicleId} position`)
+    logInfo(`publish ${car.vehicleId} position`)
     self.mqtt.publish(`volvooncall/${car.vehicleId}/position`, JSON.stringify(car.position), { retain: true});
   }
 
@@ -216,7 +221,7 @@ class App extends EventEmitter {
   handleMessage(topic, payload) {
     let self = this;
     if (topic === self.config.hassTopic) {
-      console.log("HA reloaded");
+      logInfo("HA reloaded");
       self.republishVehicles();
       return;
     }
@@ -229,19 +234,19 @@ class App extends EventEmitter {
         self.delayCharging(carId, payload);
         break;
       default:
-        console.log(`Unrecognized command ${command}`)
+        logError(`Unrecognized command ${command}`)
     } 
   }
 
   startCharging(id, payload) {
     let self = this;
-    console.log(`Start charging ${id} ${payload}`)
+    logInfo(`Start charging ${id} ${payload}`)
     self.cars[id].startCharging();
   }
 
   delayCharging(id, payload) {
     let self = this;
-    console.log(`Delay charging ${id} ${payload}`)
+    logInfo(`Delay charging ${id} ${payload}`)
     let params = JSON.parse(payload)
     self.cars[id].delayCharging(params['chargeLocation'], params['startTime'], params['endTime'])
   }

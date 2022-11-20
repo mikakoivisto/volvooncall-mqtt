@@ -1,10 +1,11 @@
 {
   "main": "app.js",
   "dependencies": {
+    "debug": "^4.3.4",
     "events": "^3.3.0",
     "http.min": "^2.1.0",
+    "mqtt": "^4.2.8",
     "util": "^0.12.5",
-    "uuid": "^9.0.0",
-    "mqtt": "^4.2.8"
+    "uuid": "^9.0.0"
   }
 }
