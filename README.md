@@ -4,7 +4,7 @@ Provides functionality to start and schedule charging which is missing from the 
 
 This uses undocumented API used by the Volvo mobile app. voc.js borrowed from https://github.com/ricott/homey-com.volvocars
 
-# Building and testing locally
+## Building and testing locally
 
 Create haconfig directory for homeassistant config directory
 
@@ -14,7 +14,26 @@ Build and run:
 docker-compose up -d --build
 ```
 
-# Configuration
+## Running with Home Assistant
+
+Simples way is to run it using docker-compose.yml. The latest versio is available direct from Docker Hub so no need to even build it locally.
+
+```yml
+version: "3.4"
+services:
+  mqtt:
+    image: eclipse-mosquitto
+    volumes:
+      - ./mosquitto/config.conf:/mosquitto/config/mosquitto.conf
+  volvooncall-mqtt:
+    image: mikakoivisto/volvooncall-mqtt:latest
+    links:
+      - mqtt
+    env_file: 
+      - docker.env
+```
+
+## Configuration
 
 Add following to docker.env file
 
@@ -26,7 +45,12 @@ MQTTPASS=
 VOCUSERNAME=
 VOCPASSWORD=
 VOCREGION=eu
+DEBUG=app:info,app:error
 ```
+
+Add app:debug to DEBUG in order to get more verbose output.
+
+### MQTT Topics
 
 Charging is triggered via MQTT topic
 
