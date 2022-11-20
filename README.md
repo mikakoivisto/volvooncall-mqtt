@@ -64,7 +64,7 @@ Payload: None
 Topic: ```volvoonvall/<car id>/delayCharging```
 Payload:
 ```json
-{ "chargingLocation": "<location id>", "startTime": "00:00", "endTime": "06:00" }
+{ "chargeLocation": "<location id>", "startTime": "00:00", "stopTime": "06:00", "delayedCharging": true }
 ```
 
 Car id and location id are found on the app log.

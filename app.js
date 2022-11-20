@@ -248,7 +248,7 @@ class App extends EventEmitter {
     let self = this;
     logInfo(`Delay charging ${id} ${payload}`)
     let params = JSON.parse(payload)
-    self.cars[id].delayCharging(params['chargeLocation'], params['startTime'], params['endTime'])
+    self.cars[id].delayCharging(params['chargeLocation'], params['delayedCharging'] || true, params['startTime'], params['stopTime'])
   }
 }
 const app = new App(config);
