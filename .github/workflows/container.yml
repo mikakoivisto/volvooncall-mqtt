@@ -16,4 +16,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: mikakoivisto/volvooncall-mqtt:latest,mikakoivisto/volvooncall-mqtt:${{ github_run_number }}
+        tags: mikakoivisto/volvooncall-mqtt:latest,mikakoivisto/volvooncall-mqtt:${{ github.run_number }}
