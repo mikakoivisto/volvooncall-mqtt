@@ -47,7 +47,10 @@ Car id and location id are found on the app log.
 
 Car information is also periodically published under topics
 
-```volvooncall/<car id>/attributes```
-```volvooncall/<car id>/status```
-```volvooncall/<car id>/charge_locations/<location id>```
-```volvooncall/<car id>/position```
+Car features: ```volvooncall/<car id>/attributes```
+
+Car status information: ```volvooncall/<car id>/status```
+
+Car charge location information: ```volvooncall/<car id>/charge_locations/<location id>```
+
+Car position: ```volvooncall/<car id>/position```
