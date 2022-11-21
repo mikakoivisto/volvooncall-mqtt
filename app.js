@@ -21,7 +21,8 @@ const config = {
   vocRegion: process.env.VOCREGION || 'eu',
   refreshStatusCar: process.env.REFRESH_STATUS_CAR || 120,
   refreshStatusCloud: process.env.REFRESH_STATUS_CLOUD || 5,
-  refreshPosition: process.env.REFRESH_POSITION || 5
+  refreshPosition: process.env.REFRESH_POSITION || 5,
+  refreshChargeLocation: process.env.REFRESH_CHARGE_LOCATION || 5
 }
 
 logDebug(JSON.stringify(config));
@@ -71,6 +72,11 @@ class App extends EventEmitter {
     setInterval(() => {
       Object.keys(self.cars).forEach(id => self.cars[id].getVehicleStatusFromCloud())
     }, 60 * 1000 * self.config.refreshStatusCloud);
+
+    // Update charge locations
+    setInterval(() => {
+      Object.keys(self.cars).forEach(id => self.cars[id].getVehicleChargeLocations())
+    }, 60 * 1000 * self.config.refreshChargeLocation);
 
     // Update position
     setInterval(() => {
