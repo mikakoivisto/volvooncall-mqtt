@@ -24,7 +24,7 @@ services:
       - TZ=Europe/Helsinki
     volumes:
       - ./haconfig:/config
-      - /etc/localtime:/etc/localtime:ro
+    #  - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     ports:
       - 8123:8123
