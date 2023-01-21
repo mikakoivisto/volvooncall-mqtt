@@ -340,7 +340,7 @@ class App extends EventEmitter {
     self.statusSensorDiscovery(car, "hvBattery.timeToHVBatteryFullyCharged", "time_to_fully_charged", {name: "Time to fully charged", icon: "mdi:clock", unit: "minutes"})
     self.statusBinarySensorDiscovery(car, "hvBattery.hvBatteryChargeStatusDerived", "battery_charging", {name: "Battery charging", deviceClass: "battery_charging"}, ".endswith('_Charging')")
     self.statusBinarySensorDiscovery(car, "hvBattery.hvBatteryChargeStatusDerived", "plug_status", {name: "Plug status", deviceClass: "plug"}, ".startswith('CablePluggedInCar_')")
-    self.statusBinarySensorDiscovery(car, "engineRunning", "engine", {name: "Engine", deviceClass: "power"}, " == 'true'")
+    self.statusBinarySensorDiscovery(car, "engineRunning", "engine", {name: "Engine", icon: "mdi:engine", deviceClass: "power"}, " == 'true'")
     self.statusBinarySensorDiscovery(car, "carLocked", "door_lock", {name: "Door Lock", deviceClass: "lock"}, " == 'true'")
     self.statusBinarySensorDiscovery(car, "doors.hoodOpen", "hood", {name: "Hood", deviceClass: "door"}, " == 'true'")
     self.statusBinarySensorDiscovery(car, "doors.tailgateOpen", "tailgate", {name: "Tailgate", deviceClass: "door"}, " == 'true'")
